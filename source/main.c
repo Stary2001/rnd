@@ -3,8 +3,7 @@
 #include "service.h"
 #include "util.h"
 
-int
-main(void)
+int main(void)
 {
 	TRY(psInit());
 
@@ -17,4 +16,3 @@ main(void)
 	return 0;
 	/* Control passed on to __ctru_exit. */
 }
-

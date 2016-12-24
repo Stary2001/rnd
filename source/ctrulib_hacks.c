@@ -3,8 +3,7 @@
 
 #include "util.h"
 
-void
-__appInit(void)
+void __appInit(void)
 {
 	Result res;
 
@@ -20,12 +19,13 @@ __appInit(void)
 	 * what the pm module does).
 	 */
 
-	while (true) {
+	while (true)
+	{
 		res = srvInit();
 
 		if (R_LEVEL(res) != RL_PERMANENT
-				&& R_SUMMARY(res) != RS_NOTFOUND
-				&& R_DESCRIPTION(res) != RD_NOT_FOUND)
+			&& R_SUMMARY(res) != RS_NOTFOUND
+			&& R_DESCRIPTION(res) != RD_NOT_FOUND)
 			break;
 
 		svcSleepThread(500000);
@@ -35,8 +35,7 @@ __appInit(void)
 		panic(res);
 }
 
-void
-initSystem()
+void initSystem()
 {
 	Result __sync_init(void);
 	void __system_initSyscalls(void);
@@ -51,14 +50,12 @@ initSystem()
 	__appInit();
 }
 
-void
-__appExit(void)
+void __appExit(void)
 {
 	srvExit();
 }
 
-void
-__ctru_exit(int unused)
+void __ctru_exit(int unused)
 {
 	(void)unused;
 	Result __sync_fini(void) __attribute__((weak));
@@ -80,4 +77,3 @@ __ctru_exit(int unused)
 
 	svcExitProcess();
 }
-

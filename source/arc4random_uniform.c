@@ -16,8 +16,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <sys/types.h>
 #include <stdlib.h>
+#include <sys/types.h>
 
 #include "arc4random.h"
 
@@ -48,7 +48,8 @@ arc4random_uniform(uint32_t upper_bound)
 	 * number inside the range we need, so it should rarely need
 	 * to re-roll.
 	 */
-	for (;;) {
+	for (;;)
+	{
 		r = arc4random();
 		if (r >= min)
 			break;

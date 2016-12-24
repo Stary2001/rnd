@@ -22,13 +22,11 @@ lcg_do(u32 seed)
  * 1: Result (always 0)
  * 2: next number/seed
  */
-void
-lcg_next(void)
+void lcg_next(void)
 {
-	u32 *cmdbuf = getThreadCommandBuffer();
+	u32* cmdbuf = getThreadCommandBuffer();
 	cmdbuf[0] = IPC_MakeHeader(0x0001, 2, 0);
 
 	cmdbuf[2] = lcg_do(cmdbuf[1]);
 	cmdbuf[1] = 0;
 }
-

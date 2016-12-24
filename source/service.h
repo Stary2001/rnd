@@ -6,4 +6,3 @@ void run_service(void);
 void deregister_service(void);
 
 #endif
-

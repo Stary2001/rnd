@@ -4,4 +4,3 @@
 void lcg_next(void);
 
 #endif
-

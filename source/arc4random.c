@@ -38,32 +38,34 @@
 
 #define minimum(a, b) ((a) < (b) ? (a) : (b))
 
-#define KEYSZ	32
-#define IVSZ	8
-#define BLOCKSZ	64
-#define RSBUFSZ	(16*BLOCKSZ)
+#define KEYSZ 32
+#define IVSZ 8
+#define BLOCKSZ 64
+#define RSBUFSZ (16 * BLOCKSZ)
 
 /* Marked MAP_INHERIT_ZERO, so zero'd out in fork children. */
-static struct _rs {
-	size_t		rs_have;	/* valid bytes at end of rs_buf */
-	size_t		rs_count;	/* bytes till reseed */
+static struct _rs
+{
+	size_t rs_have;  /* valid bytes at end of rs_buf */
+	size_t rs_count; /* bytes till reseed */
 } rs;
 
 static int rs_inited;
 
-static struct _rsx {
-	chacha_ctx	rs_chacha;	/* chacha context for random keystream */
-	u_char		rs_buf[RSBUFSZ];	/* keystream blocks */
+static struct _rsx
+{
+	chacha_ctx rs_chacha;   /* chacha context for random keystream */
+	u_char rs_buf[RSBUFSZ]; /* keystream blocks */
 } rsx;
 
 static Result
-getentropy(void *buf, size_t len)
+getentropy(void* buf, size_t len)
 {
 	return PS_GenerateRandomBytes(buf, len);
 }
 
 static inline void
-_rs_init(u_char *buf, size_t n)
+_rs_init(u_char* buf, size_t n)
 {
 	if (n < KEYSZ + IVSZ)
 		return;
@@ -75,16 +77,17 @@ _rs_init(u_char *buf, size_t n)
 }
 
 static inline void
-_rs_rekey(u_char *dat, size_t datlen)
+_rs_rekey(u_char* dat, size_t datlen)
 {
 #ifndef KEYSTREAM_ONLY
 	memset(rsx.rs_buf, 0, sizeof(rsx.rs_buf));
 #endif
 	/* fill rs_buf with the keystream */
 	chacha_encrypt_bytes(&rsx.rs_chacha, rsx.rs_buf,
-	    rsx.rs_buf, sizeof(rsx.rs_buf));
+		rsx.rs_buf, sizeof(rsx.rs_buf));
 	/* mix in optional user provided data */
-	if (dat) {
+	if (dat)
+	{
 		size_t i, m;
 
 		m = minimum(datlen, KEYSZ + IVSZ);
@@ -110,7 +113,7 @@ _rs_stir(void)
 		_rs_init(rnd, sizeof(rnd));
 	else
 		_rs_rekey(rnd, sizeof(rnd));
-	explicit_bzero(rnd, sizeof(rnd));	/* discard source seed */
+	explicit_bzero(rnd, sizeof(rnd)); /* discard source seed */
 
 	/* invalidate rs_buf */
 	rs.rs_have = 0;
@@ -131,18 +134,20 @@ _rs_stir_if_needed(size_t len)
 }
 
 static inline void
-_rs_random_buf(void *_buf, size_t n)
+_rs_random_buf(void* _buf, size_t n)
 {
-	u_char *buf = (u_char *)_buf;
-	u_char *keystream;
+	u_char* buf = (u_char*)_buf;
+	u_char* keystream;
 	size_t m;
 
 	_rs_stir_if_needed(n);
-	while (n > 0) {
-		if (rs.rs_have > 0) {
+	while (n > 0)
+	{
+		if (rs.rs_have > 0)
+		{
 			m = minimum(n, rs.rs_have);
 			keystream = rsx.rs_buf + sizeof(rsx.rs_buf)
-			    - rs.rs_have;
+				- rs.rs_have;
 			memcpy(buf, keystream, m);
 			memset(keystream, 0, m);
 			buf += m;
@@ -155,9 +160,9 @@ _rs_random_buf(void *_buf, size_t n)
 }
 
 static inline void
-_rs_random_u32(uint32_t *val)
+_rs_random_u32(uint32_t* val)
 {
-	u_char *keystream;
+	u_char* keystream;
 
 	_rs_stir_if_needed(sizeof(*val));
 	if (rs.rs_have < sizeof(*val))
@@ -192,8 +197,7 @@ arc4random(void)
 	return val;
 }
 
-void
-arc4random_buf(void *buf, size_t n)
+void arc4random_buf(void* buf, size_t n)
 {
 	_rs_random_buf(buf, n);
 }

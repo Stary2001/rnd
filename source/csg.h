@@ -6,4 +6,3 @@ void csg_uniform(void);
 void csg_buf(void);
 
 #endif
-
