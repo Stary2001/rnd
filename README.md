@@ -24,6 +24,7 @@ See LICENSE.
 
 ## Source Tree
 
+```
 rnd
 ├── client (client for rnd:L and rnd:C)
 │   ├── Makefile
@@ -75,6 +76,7 @@ rnd
     ├── util.c
     └── util.h
           Small utility functions: panic() and write_invalid_arg_error().
+```
 
 ## Known Issues
 
