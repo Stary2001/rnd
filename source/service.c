@@ -75,8 +75,7 @@ void register_service(void)
 	TRY(srvEnableNotification(&notifier));
 }
 
-static s32
-get_closing_client(Handle service_handles[], s32 returned_idx, Handle requester)
+static s32 get_closing_client(Handle service_handles[], s32 returned_idx, Handle requester)
 {
 	size_t i;
 
@@ -102,8 +101,7 @@ get_closing_client(Handle service_handles[], s32 returned_idx, Handle requester)
 	return -2;
 }
 
-static const struct Service*
-find_service_from_index(s32 idx)
+static const struct Service* find_service_from_index(s32 idx)
 {
 	switch (idx)
 	{
@@ -118,8 +116,7 @@ find_service_from_index(s32 idx)
 	}
 }
 
-static int
-accept_client(Handle* client, const struct Service* service)
+static int accept_client(Handle* client, const struct Service* service)
 {
 	TRY(svcAcceptSession(client, service->handle));
 
@@ -132,8 +129,7 @@ accept_client(Handle* client, const struct Service* service)
 	return 0;
 }
 
-static void
-handle_commands(const struct Service* service)
+static void handle_commands(const struct Service* service)
 {
 	/* Blatant assumption: Correct argument provided. */
 

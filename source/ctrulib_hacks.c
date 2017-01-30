@@ -2,7 +2,7 @@
 #include <3ds/env.h>
 
 #include "util.h"
-
+void __appInit();
 void __appInit(void)
 {
 	Result res;
@@ -35,45 +35,34 @@ void __appInit(void)
 		panic(res);
 }
 
-void initSystem()
-{
-	Result __sync_init(void);
-	void __system_initSyscalls(void);
-
-	/* do not:
-	 *
-	 * - mess with the stack using the "fake heap"
-	 */
-
-	TRY(__sync_init());
-	__system_initSyscalls();
-	__appInit();
-}
-
+void __appExit();
 void __appExit(void)
 {
 	srvExit();
 }
 
-void __ctru_exit(int unused)
+extern char* fake_heap_start;
+extern char* fake_heap_end;
+extern int __stacksize__;
+
+u32 __ctru_heap;
+u32 __ctru_heap_size = 0x80000; // some arbitrary amount of memory that should be free in BASE.
+u32 __ctru_linear_heap;
+u32 __ctru_linear_heap_size;
+
+void __system_allocateHeaps();
+void __system_allocateHeaps()
 {
-	(void)unused;
-	Result __sync_fini(void) __attribute__((weak));
-	void envDestroyHandles(void);
+	__ctru_heap_size += __stacksize__;
+	__ctru_heap = 0x08000000;
 
-	/* Do not:
-	 *
-	 * - unmap the linear and application heap
-	 * - mess with the stack
-	 * - try to return to HBL
-	 */
+	u32 tmp;
 
-	__appExit();
+	TRY(svcControlMemory(&tmp, __ctru_heap, 0x0, __ctru_heap_size, MEMOP_ALLOC, MEMPERM_READ | MEMPERM_WRITE));
 
-	envDestroyHandles();
+	__ctru_linear_heap = 0;
+	__ctru_linear_heap_size = 0;
 
-	if (__sync_fini)
-		TRY(__sync_fini());
-
-	svcExitProcess();
+	fake_heap_start = (char*)__ctru_heap;
+	fake_heap_end = fake_heap_start + __ctru_heap_size;
 }
